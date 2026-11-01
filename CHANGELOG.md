@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Accept `scan --ci` as an explicit non-interactive flag. It still requires
+  `--yes` and preserves the existing report formats and exit-code policy.
+
 ## 0.5.0
 
 Compatibility: report schema stays `2.0` and this entry is additive-only —

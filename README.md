@@ -74,6 +74,14 @@ mcpveil scan --stdio "node test-server.js" --yes --format json -o report.json
 mcpveil scan --stdio "node test-server.js" --yes --format sarif -o report.sarif
 ```
 
+Use `--ci` to explicitly select non-interactive scanning in pipelines. It
+preserves the same report formats and exit-code policy and still requires
+`--yes` to authorize the target:
+
+```bash
+mcpveil scan --stdio "node test-server.js" --ci --yes --format sarif -o report.sarif
+```
+
 | Exit | Meaning |
 |---|---|
 | 0 | Completed requested assessment; no finding exceeds the configured threshold |
