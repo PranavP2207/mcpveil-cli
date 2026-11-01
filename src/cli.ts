@@ -62,7 +62,10 @@ program.command("baseline").description("Reviewable expiring finding acceptance"
     catch (err) { log.error(err instanceof Error ? err.message : String(err)); process.exitCode = EXIT.USAGE; }
   });
 
-program.command("scan").description("Scan an explicitly authorized MCP server")
+for (const commandName of ["scan", "inspect"] as const) program.command(commandName)
+  .description(commandName === "inspect"
+    ? "Inspect metadata only: zero tools/call, resources/read, or prompts/get requests"
+    : "Scan an explicitly authorized MCP server")
   .option("--stdio <command>", "launch an exact command through stdio (no shell)")
   .option("--url <url>", "HTTP target, with legacy SSE fallback")
   .addOption(new Option("--transport <kind>", "force a transport").choices(["stdio", "streamable-http", "sse"]))
@@ -88,7 +91,7 @@ program.command("scan").description("Scan an explicitly authorized MCP server")
   .option("--inventory-only", "metadata only: zero tools/call, resources/read, or prompts/get requests")
   .option("--yes", "authorize launching/contacting this target and the selected scan mode")
   .action(async (opts: CliOpts) => {
-    try { process.exitCode = await scanAction(opts); }
+    try { process.exitCode = await scanAction({ ...opts, inventoryOnly: commandName === "inspect" || opts.inventoryOnly }); }
     catch (err) { log.error(err instanceof Error ? err.message : String(err)); process.exitCode = err instanceof UsageError ? EXIT.USAGE : EXIT.SCAN_FAIL; }
   });
 

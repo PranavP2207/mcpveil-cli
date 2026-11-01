@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add `mcpveil inspect` as an alias for inventory-only scanning, with the same
+  options and consent requirement as `scan --inventory-only` and zero tool,
+  resource-body, or prompt-body invocations.
+
 ## 0.5.0
 
 Compatibility: report schema stays `2.0` and this entry is additive-only —

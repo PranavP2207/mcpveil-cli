@@ -28,6 +28,8 @@ mcpveil --version
 
 # Inventory metadata: no tools/call, resources/read, or prompts/get requests.
 mcpveil scan --stdio "node path/to/server.js" --inventory-only --yes
+# Equivalent inventory-only command.
+mcpveil inspect --stdio "node path/to/server.js" --yes
 
 # Active testing of your own disposable test server.
 mcpveil scan --stdio "node path/to/server.js" --yes
@@ -41,6 +43,10 @@ code even in inventory-only mode.** Active tool calls can have side effects;
 use disposable test data and isolate untrusted servers in a container or VM.
 An isolated child HOME and filtered environment do not create a filesystem
 sandbox. See [safe local testing](docs/sandbox.md).
+
+`inspect` accepts the same options as `scan` and always uses inventory-only
+mode: zero `tools/call`, `resources/read`, or `prompts/get` requests. Adding
+`--inventory-only` to `inspect` is harmless; `--yes` is still required.
 
 ## Real CLI demonstration
 
