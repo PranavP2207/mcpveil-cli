@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add format-valid benign fillers for `duration`, `byte`, `regex`,
+  `json-pointer`, `uri-reference`, `uri-template`, `idn-email`, and `iri`
+  so required sibling arguments can satisfy server-side format validation.
+
 ## 0.5.0
 
 Compatibility: report schema stays `2.0` and this entry is additive-only —

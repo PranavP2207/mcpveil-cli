@@ -2,6 +2,7 @@
 import { describe, it, expect } from "vitest";
 import { classifyArg, planCalls, benignValue } from "../../src/engine/argPlanner.js";
 import { isExcluded } from "../../src/engine/scanner.js";
+import { parseSchema } from "../../src/engine/schema.js";
 import type { ToolInfo } from "../../src/types.js";
 
 it("allow-tool excludes exact names and prefix wildcards", () => {
@@ -70,7 +71,32 @@ it("benignValue satisfies known string formats", () => {
   ] as const) {
     expect(benignValue({ name: "v", type: "string", required: true, format })).toBe(value);
   }
-  expect(benignValue({ name: "v", type: "string", required: true, format: "byte" })).toBe("mcpveil");
+  expect(benignValue({ name: "v", type: "string", required: true, format: "custom-format" })).toBe("mcpveil");
+});
+
+it.each([
+  ["duration", "P1D"],
+  ["byte", "bWNwdmVpbA=="],
+  ["regex", "^mcpveil$"],
+  ["json-pointer", "/a"],
+  ["uri-reference", "/report"],
+  ["uri-template", "/items/{id}"],
+  ["idn-email", "mcpveil@example.com"],
+  ["iri", "https://mcpveil.example"],
+])("fills required %s siblings without schema limitations", (format, value) => {
+  const inputSchema = { type: "object", properties: {
+    path: { type: "string" },
+    value: { type: "string", format },
+  }, required: ["path", "value"] };
+  const parsed = parseSchema(inputSchema);
+  expect(parsed.limitations).toEqual([]);
+  expect(benignValue(parsed.properties[1]!)).toBe(value);
+  const formatted: ToolInfo = {
+    name: "read_file", description: "Read a file", inputSchema,
+    properties: parsed.properties, requiredArgNames: ["path", "value"],
+  };
+  const [call] = planCalls(formatted, "path", ["../report"], 1);
+  expect(call?.args).toEqual({ path: "../report", value });
 });
 
 it("caps calls at maxCalls", () => {

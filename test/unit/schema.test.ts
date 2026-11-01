@@ -39,13 +39,13 @@ it("handles hostile property names without changing object prototypes", () => {
 it("captures string formats and reports formats it cannot fill", () => {
   const parsed = parseSchema({ type: "object", properties: {
     when: { type: "string", format: "date-time" },
-    bucket: { type: "string", format: "duration" },
+    bucket: { type: "string", format: "custom-format" },
     count: { type: "number", format: "int32" },
   } });
   const [when, bucket, count] = parsed.properties;
   expect(when.format).toBe("date-time");
-  expect(bucket.format).toBe("duration");
+  expect(bucket.format).toBe("custom-format");
   expect(count.format).toBeUndefined();
-  expect(parsed.limitations).toContain("unsupported string format: duration");
+  expect(parsed.limitations).toContain("unsupported string format: custom-format");
   expect(parsed.limitations).toContain("unsupported schema constraint: format");
 });

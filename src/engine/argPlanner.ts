@@ -33,6 +33,14 @@ export const FORMAT_VALUES: Record<string, string> = {
   "ipv4": "127.0.0.1",
   "ipv6": "::1",
   "hostname": "mcpveil.example",
+  "duration": "P1D",
+  "byte": "bWNwdmVpbA==",
+  "regex": "^mcpveil$",
+  "json-pointer": "/a",
+  "uri-reference": "/report",
+  "uri-template": "/items/{id}",
+  "idn-email": "mcpveil@example.com",
+  "iri": "https://mcpveil.example",
 };
 
 /** Required sibling fillers are bounded; constraints outside this subset are reported. */
