@@ -1,5 +1,5 @@
 import type { ToolSchemaProperty } from "../types.js";
-import { FORMAT_VALUES } from "./argPlanner.js";
+import { FORMAT_VALUES, formatLiteral } from "./argPlanner.js";
 
 type Schema = Record<string, any>;
 /** Deliberately bounded subset of JSON Schema; no untrusted regular expressions. */
@@ -50,6 +50,8 @@ export function parseSchema(root: Schema): { properties: ToolSchemaProperty[]; l
     if (Object.hasOwn(def, "const")) p.constValue = def.const;
     for (const key of ["minimum", "maximum", "minLength", "maxLength", "minItems", "maxItems"] as const)
       if (Number.isFinite(def[key])) p[key] = def[key];
+    if (p.format && FORMAT_VALUES[p.format] !== undefined && p.constValue === undefined && !p.enum?.length
+      && formatLiteral(p) === undefined) limitations.add(`format literal cannot satisfy string length bounds: ${p.format}`);
     if ((p.minLength ?? 0) > 4096 || (p.minItems ?? 0) > 8) limitations.add("schema filler size exceeds safety limit");
     if (type === "object") {
       const req = new Set(Array.isArray(def.required) ? def.required : []);

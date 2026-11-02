@@ -75,6 +75,25 @@ it("benignValue satisfies known string formats", () => {
 });
 
 it.each([
+  ["duration", { maxLength: 2 }, "mc"],
+  ["duration", { minLength: 4 }, "mcpveil"],
+  ["duration", { maxLength: 0 }, ""],
+  ["email", { maxLength: 2 }, "mc"],
+  ["email", { minLength: 20 }, "mcpveilxxxxxxxxxxxxx"],
+  ["byte", { minLength: 13 }, "mcpveilxxxxxx"],
+] as const)("uses the generic filler for %s with incompatible length bounds %j", (format, bounds, value) => {
+  expect(benignValue({ name: "v", type: "string", required: true, format, ...bounds })).toBe(value);
+});
+
+it.each([
+  ["duration", { minLength: 3, maxLength: 3 }, "P1D"],
+  ["email", { minLength: 19, maxLength: 19 }, "mcpveil@example.com"],
+  ["byte", { minLength: 12, maxLength: 12 }, "bWNwdmVpbA=="],
+] as const)("preserves the intact %s literal at exact length bounds", (format, bounds, value) => {
+  expect(benignValue({ name: "v", type: "string", required: true, format, ...bounds })).toBe(value);
+});
+
+it.each([
   ["duration", "P1D"],
   ["byte", "bWNwdmVpbA=="],
   ["regex", "^mcpveil$"],

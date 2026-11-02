@@ -19,8 +19,8 @@ export function classifyArg(p: ToolSchemaProperty): ArgIntent {
 /**
  * Valid literals for the `format` hints we can satisfy. Servers validate
  * formats (e.g. date or uri), and a padded filler would be rejected before a
- * payload is ever evaluated. Unknown formats keep the padded default and are
- * surfaced as schema limitations.
+ * payload is ever evaluated. Unknown formats and literals that cannot fit the
+ * string length bounds use the generic filler and are surfaced as limitations.
  */
 export const FORMAT_VALUES: Record<string, string> = {
   "date": "2026-01-01",
@@ -43,6 +43,13 @@ export const FORMAT_VALUES: Record<string, string> = {
   "iri": "https://mcpveil.example",
 };
 
+/** Keep structured format literals intact; use them only when the bounds fit. */
+export function formatLiteral(p: ToolSchemaProperty): string | undefined {
+  const value = p.format ? FORMAT_VALUES[p.format] : undefined;
+  if (value === undefined || value.length < (p.minLength ?? 0) || value.length > (p.maxLength ?? Infinity)) return undefined;
+  return value;
+}
+
 /** Required sibling fillers are bounded; constraints outside this subset are reported. */
 export function benignValue(p: ToolSchemaProperty): unknown {
   if (p.constValue !== undefined) return p.constValue;
@@ -52,9 +59,11 @@ export function benignValue(p: ToolSchemaProperty): unknown {
     case "boolean": return false;
     case "array": return p.items ? Array.from({ length: Math.min(8, p.maxItems ?? Infinity, Math.max(1, p.minItems ?? 0)) }, () => benignValue(p.items!)) : [];
     case "object": return Object.fromEntries((p.properties ?? []).filter((n) => n.required).map((n) => [n.name, benignValue(n)]));
-    case "string":
-      if (p.format && FORMAT_VALUES[p.format] !== undefined) return FORMAT_VALUES[p.format]!;
+    case "string": {
+      const formatted = formatLiteral(p);
+      if (formatted !== undefined) return formatted;
       return "mcpveil".padEnd(Math.min(4096, p.minLength ?? 0), "x").slice(0, p.maxLength ?? Infinity);
+    }
     default: return null;
   }
 }
