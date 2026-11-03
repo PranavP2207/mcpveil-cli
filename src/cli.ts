@@ -86,6 +86,7 @@ program.command("scan").description("Scan an explicitly authorized MCP server")
   .option("--skip-check <id...>", "disable named checks")
   .option("--env <name>", "explicitly forward one environment variable (repeatable)", (value: string, previous: string[]) => [...previous, value], [])
   .option("--inventory-only", "metadata only: zero tools/call, resources/read, or prompts/get requests")
+  .option("--ci", "explicit non-interactive mode (--yes still required)")
   .option("--yes", "authorize launching/contacting this target and the selected scan mode")
   .action(async (opts: CliOpts) => {
     try { process.exitCode = await scanAction(opts); }
