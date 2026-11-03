@@ -89,6 +89,7 @@ for (const commandName of ["scan", "inspect"] as const) program.command(commandN
   .option("--skip-check <id...>", "disable named checks")
   .option("--env <name>", "explicitly forward one environment variable (repeatable)", (value: string, previous: string[]) => [...previous, value], [])
   .option("--inventory-only", "metadata only: zero tools/call, resources/read, or prompts/get requests")
+  .option("--ci", "explicit non-interactive mode (--yes still required)")
   .option("--yes", "authorize launching/contacting this target and the selected scan mode")
   .action(async (opts: CliOpts) => {
     try { process.exitCode = await scanAction({ ...opts, inventoryOnly: commandName === "inspect" || opts.inventoryOnly }); }
