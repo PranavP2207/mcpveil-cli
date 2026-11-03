@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Add format-valid benign fillers for `duration`, `byte`, `regex`,
+  `json-pointer`, `uri-reference`, `uri-template`, `idn-email`, and `iri`
+  so required sibling arguments can satisfy server-side format validation.
+- Keep format literals intact only when they satisfy string length bounds.
+  Otherwise use the generic bounded filler and report an explicit schema
+  limitation, including for previously supported formats.
+
 ## 0.5.0
 
 Compatibility: report schema stays `2.0` and this entry is additive-only —
